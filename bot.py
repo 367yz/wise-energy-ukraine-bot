@@ -1,36 +1,19 @@
 import asyncio
-from aiogram import Bot, Dispatcher, F
-from aiogram.types import Message
+from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.storage.memory import MemoryStorage
-from config import TOKEN
+from config import BOT_TOKEN
 from handlers import start_handler, pdf_handler, request_contact, contact_name, contact_phone
-from aiogram.filters import Command
-from aiogram.fsm.context import FSMContext
 
-bot = Bot(token=TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
-@dp.message(Command("start"))
-async def cmd_start(message: Message):
-    await start_handler(message)
-
-@dp.message(F.text == "Отримати PDF з цінами")
-async def get_pdf(message: Message):
-    await pdf_handler(message)
-
-@dp.message(F.text == "Залишити заявку")
-async def start_request(message: Message, state: FSMContext):
-    await request_contact(message, state)
-
-@dp.message(F.text, F.state == "name")
-async def get_name(message: Message, state: FSMContext):
-    await contact_name(message, state)
-
-@dp.message(F.text, F.state == "phone")
-async def get_phone(message: Message, state: FSMContext):
-    await contact_phone(message, state)
+dp.message.register(start_handler, commands=["start"])
+dp.message.register(pdf_handler, lambda msg: msg.text == "Отримати прайс")
+dp.message.register(request_contact, lambda msg: msg.text == "Залишити контакти")
+dp.message.register(contact_name, state="ContactForm:name")
+dp.message.register(contact_phone, state="ContactForm:phone")
 
 async def main():
+    bot = Bot(token=BOT_TOKEN, parse_mode="HTML")
     await dp.start_polling(bot)
 
 if name == "__main__":

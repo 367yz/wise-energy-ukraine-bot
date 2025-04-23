@@ -1,10 +1,9 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 main_kb = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="Отримати PDF з цінами")],
-        [KeyboardButton(text="Залишити заявку")]
+        [KeyboardButton(text="Отримати прайс")],
+        [KeyboardButton(text="Залишити контакти")],
     ],
-    resize_keyboard=True,
-    one_time_keyboard=False
+    resize_keyboard=True
 )
