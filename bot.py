@@ -1,19 +1,26 @@
 import asyncio
-from aiogram import Bot, Dispatcher, types
-from aiogram.fsm.storage.memory import MemoryStorage
-from config import BOT_TOKEN
-from handlers import start_handler, pdf_handler, request_contact, contact_name, contact_phone
+import logging
 
+from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.filters import Command
+from handlers import start_handler, pdf_handler, request_contact, contact_name, contact_phone
+from config import BOT_TOKEN
+
+logging.basicConfig(level=logging.INFO)
+
+bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
-dp.message.register(start_handler, commands=["start"])
-dp.message.register(pdf_handler, lambda msg: msg.text == "Отримати прайс")
-dp.message.register(request_contact, lambda msg: msg.text == "Залишити контакти")
-dp.message.register(contact_name, state="ContactForm:name")
-dp.message.register(contact_phone, state="ContactForm:phone")
+dp.message.register(start_handler, Command("start"))
+dp.message.register(pdf_handler, Command("price"))
+dp.message.register(request_contact, Command("contact"))
+
+dp.message.register(contact_name, lambda msg, state: state.state == "name")
+dp.message.register(contact_phone, lambda msg, state: state.state == "phone")
+
 
 async def main():
-    bot = Bot(token=BOT_TOKEN, parse_mode="HTML")
     await dp.start_polling(bot)
 
 if name == "__main__":
